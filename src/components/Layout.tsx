@@ -1,4 +1,5 @@
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, NavLink } from 'react-router-dom';
+import { ROUTES } from '../config/routes';
 
 export function Layout() {
   return (
@@ -8,17 +9,36 @@ export function Layout() {
           <div className="flex justify-between h-16">
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
-                <Link to="/" className="text-xl font-bold text-blue-600">
+                <Link to={ROUTES.HOME} className="text-xl font-bold text-blue-600">
                   JSONCraft
                 </Link>
               </div>
               <div className="ml-6 flex space-x-8">
-                <Link to="/" className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900">
+                <NavLink 
+                  to={ROUTES.HOME} 
+                  end
+                  className={({ isActive }) => 
+                    `inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors ${
+                      isActive 
+                        ? 'border-blue-500 text-gray-900' 
+                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                    }`
+                  }
+                >
                   Home
-                </Link>
-                <Link to="/tools" className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-600 hover:text-gray-900">
+                </NavLink>
+                <NavLink 
+                  to={ROUTES.TOOLS} 
+                  className={({ isActive }) => 
+                    `inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors ${
+                      isActive 
+                        ? 'border-blue-500 text-gray-900' 
+                        : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                    }`
+                  }
+                >
                   Tools
-                </Link>
+                </NavLink>
               </div>
             </div>
           </div>
