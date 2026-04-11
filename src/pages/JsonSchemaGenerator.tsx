@@ -15,10 +15,24 @@ function generateSchema(value: unknown): any {
   }
 
   if (typeof value === "object") {
-    return {
+    const properties: Record<string, any> = {};
+    const required: string[] = [];
+
+    for (const [key, val] of Object.entries(value as Record<string, any>)) {
+      properties[key] = generateSchema(val);
+      required.push(key);
+    }
+
+    const schema: any = {
       type: "object",
-      properties: {}
+      properties
     };
+
+    if (required.length > 0) {
+      schema.required = required;
+    }
+
+    return schema;
   }
 
   switch (typeof value) {
