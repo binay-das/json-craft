@@ -26,10 +26,15 @@ export default function CsvToJson() {
       if (!line) continue;
 
       const values = line.split(delimiter).map(v => v.trim());
-      const obj: Record<string, string> = {};
+      const obj: Record<string, string | number> = {};
       
       generatedHeaders.forEach((header, index) => {
-        obj[header] = values[index] !== undefined ? values[index] : "";
+        let val: string | number = values[index] !== undefined ? values[index] : "";
+        // Check if val is purely numeric
+        if (val !== "" && !isNaN(Number(val))) {
+          val = Number(val);
+        }
+        obj[header] = val;
       });
       
       jsonArray.push(obj);
