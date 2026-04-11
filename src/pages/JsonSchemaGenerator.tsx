@@ -65,7 +65,11 @@ export default function JsonSchemaGenerator() {
     try {
       const parsed = JSON.parse(value);
       const schema = generateSchema(parsed);
-      setOutputValue(JSON.stringify(schema, null, 2));
+      const finalSchema = {
+        $schema: "http://json-schema.org/draft-07/schema#",
+        ...schema
+      };
+      setOutputValue(JSON.stringify(finalSchema, null, 2));
     } catch (err) {
       setError(err instanceof Error ? `Invalid JSON: ${err.message}` : "Invalid JSON");
     }
