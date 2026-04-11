@@ -1,8 +1,19 @@
-import { Outlet, Link, useParams } from 'react-router-dom';
+import { Outlet, Link, useParams, useLocation } from 'react-router-dom';
 import { ROUTES } from '../config/routes';
 
 export function ToolLayout() {
   const { name } = useParams();
+  const location = useLocation();
+  const pathName = name || location.pathname.split('/').filter(Boolean).pop();
+
+  let title = pathName ? pathName.replace('-', ' ') : 'Tool';
+  let description = 'Use this tool to process your data efficiently.';
+
+  // specific overrides
+  if (pathName === 'json-formatter') {
+    title = 'JSON Formatter';
+    description = 'Format, validate, and beautify your JSON data instantly.';
+  }
 
   return (
     <div className="bg-white shadow rounded-lg p-6">
@@ -11,10 +22,10 @@ export function ToolLayout() {
           &larr; Back to Tools
         </Link>
         <h1 className="text-2xl font-bold text-gray-900 capitalize text-left">
-          {name ? name.replace('-', ' ') : 'Tool'}
+          {title}
         </h1>
         <p className="mt-1 text-sm text-gray-500 text-left">
-          Use this tool to process your data efficiently.
+          {description}
         </p>
       </div>
       <div>

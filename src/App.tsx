@@ -5,6 +5,7 @@ import ToolDetail from './pages/ToolDetail';
 import { Layout } from './components/Layout';
 import { ToolLayout } from './components/ToolLayout';
 import { ROUTES } from './config/routes';
+import JsonFormatter from './pages/JsonFormatter';
 
 function App() {
   return (
@@ -12,8 +13,9 @@ function App() {
       <Route path={ROUTES.PATTERNS.HOME} element={<Layout />}>
         <Route index element={<Home />} />
         <Route path={ROUTES.PATTERNS.TOOLS} element={<Tools />} />
-        <Route path={ROUTES.PATTERNS.TOOL_DETAIL} element={<ToolLayout />}>
-          <Route index element={<ToolDetail />} />
+        <Route path="tool" element={<ToolLayout />}>
+          <Route path="json-formatter" element={<JsonFormatter />} />
+          <Route path=":name" element={<ToolDetail />} />
         </Route>
       </Route>
     </Routes>
