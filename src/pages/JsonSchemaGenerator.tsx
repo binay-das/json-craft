@@ -10,7 +10,7 @@ function generateSchema(value: unknown): any {
   if (Array.isArray(value)) {
     return {
       type: "array",
-      items: {}
+      items: value.length > 0 ? generateSchema(value[0]) : {}
     };
   }
 
