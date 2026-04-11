@@ -9,12 +9,33 @@ export default function CsvToJson() {
 
   useEffect(() => {
     const lines = value.split('\n');
+    let generatedHeaders: string[] = [];
+    
     if (lines.length > 0 && lines[0].trim() !== '') {
-      const headerRow = lines[0].split(delimiter).map(h => h.trim());
-      setHeaders(headerRow);
+      generatedHeaders = lines[0].split(delimiter).map(h => h.trim());
+      setHeaders(generatedHeaders);
     } else {
       setHeaders([]);
+      setOutputValue("[]");
+      return;
     }
+
+    const jsonArray = [];
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      const values = line.split(delimiter).map(v => v.trim());
+      const obj: Record<string, string> = {};
+      
+      generatedHeaders.forEach((header, index) => {
+        obj[header] = values[index] !== undefined ? values[index] : "";
+      });
+      
+      jsonArray.push(obj);
+    }
+
+    setOutputValue(JSON.stringify(jsonArray, null, 2));
   }, [value, delimiter]);
 
   const handleEditorChange = (val: string | undefined) => {
