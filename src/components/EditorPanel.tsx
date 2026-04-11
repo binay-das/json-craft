@@ -32,7 +32,18 @@ export function EditorPanel({
           language={language}
           value={value}
           onChange={onChange}
-          options={{ readOnly }}
+          options={{
+            readOnly,
+            fontSize: 14,
+            minimap: { 
+              enabled: true 
+            },
+            wordWrap: 'on',
+            scrollBeyondLastLine: false,
+            smoothScrolling: true,
+            padding: { top: 16, bottom: 16 },
+            fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace",
+          }}
         />
       </div>
     </div>
