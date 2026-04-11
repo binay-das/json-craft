@@ -6,6 +6,11 @@ export default function Tools() {
   const [readOnly, setReadOnly] = useState<boolean>(false);
   const [language, setLanguage] = useState<string>("json");
 
+  const copyToClipboard = async (toCopy: string) => {
+    await navigator.clipboard.writeText(toCopy);
+    alert("copied!");
+  }
+
   return (
     <div className="p-4 space-y-4">
       <h1 className="text-2xl font-bold">Tools </h1>
@@ -39,7 +44,16 @@ export default function Tools() {
         value={editorPanelValue}
         onChange={(value) => setEditorPanelValue(value || "")}
         language={language}
-        readOnly={readOnly} 
+        readOnly={readOnly}
+        label="Input Data"
+        toolbar={
+          <button 
+            onClick={() => copyToClipboard(editorPanelValue)}
+            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+          >
+            Copy
+          </button>
+        }
       />
 
     </div>
