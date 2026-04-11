@@ -7,6 +7,7 @@ import { ToolLayout } from './components/ToolLayout';
 import { ROUTES } from './config/routes';
 import JsonFormatter from './pages/JsonFormatter';
 import CsvToJson from './pages/CsvToJson';
+import JsonSchemaGenerator from './pages/JsonSchemaGenerator';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="tool" element={<ToolLayout />}>
           <Route path="json-formatter" element={<JsonFormatter />} />
           <Route path="csv-to-json" element={<CsvToJson />} />
+          <Route path="json-schema" element={<JsonSchemaGenerator />} />
           <Route path=":name" element={<ToolDetail />} />
         </Route>
       </Route>

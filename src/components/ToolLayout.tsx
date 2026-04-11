@@ -17,6 +17,9 @@ export function ToolLayout() {
   else if (pathName === 'csv-to-json') {
     title = 'CSV → JSON Converter';
     description = 'Convert structured CSV data into JSON format seamlessly.';
+  } else if (pathName === 'json-schema') {
+    title = 'JSON Schema Generator';
+    description = 'Automatically generate JSON Schema definitions from your JSON data.';
   }
 
   return (
