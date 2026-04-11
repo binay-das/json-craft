@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { EditorPanel } from '../components/EditorPanel';
+import { parseJSON, prettyPrintJSON, minifyJSON } from '../lib/utils';
 
 export default function JsonFormatter() {
   const [value, setValue] = useState<string>("{\n  \"example\": \"data\"\n}");
@@ -10,73 +11,69 @@ export default function JsonFormatter() {
   const handlePrettyPrint = () => {
     setError(null);
     setSuccess(null);
+
+    if (!value.trim()) {
+      setOutputValue("");
+      return;
+    }
+
     try {
-      if (!value.trim()) {
-        setOutputValue("");
-        return;
-      }
-      const parsed = JSON.parse(value);
-      const formatted = JSON.stringify(parsed, null, 2);
-      setOutputValue(formatted);
+      setOutputValue(prettyPrintJSON(value));
     } catch (err) {
-      if (err instanceof Error) {
-        setError(`Invalid JSON: ${err.message}`);
-      } else {
-        setError("Invalid JSON");
-      }
+      setError(err instanceof Error ? `Invalid JSON: ${err.message}` : "Invalid JSON");
     }
   };
 
   const handleMinify = () => {
     setError(null);
     setSuccess(null);
-    
+
+    if (!value.trim()) {
+      setOutputValue("");
+      return;
+    }
+
     try {
-      if (!value.trim()) {
-        setOutputValue("");
-        return;
-      }
-      const parsed = JSON.parse(value);
-      const minified = JSON.stringify(parsed);
-
-      setOutputValue(minified);
-
+      setOutputValue(minifyJSON(value));
     } catch (err) {
-
-      if (err instanceof Error) {
-        setError(`Invalid JSON: ${err.message}`);
-      } else {
-        setError("Invalid JSON");
-      }
-
+      setError(err instanceof Error ? `Invalid JSON: ${err.message}` : "Invalid JSON");
     }
   };
 
   const handleValidate = () => {
     setError(null);
     setSuccess(null);
+
     if (!value.trim()) {
       setError("Please enter JSON to validate");
       return;
     }
+
     try {
-      JSON.parse(value);
+      parseJSON(value);
       setSuccess("Valid JSON");
     } catch (err) {
-      if (err instanceof Error) {
-        setError(`Invalid JSON: ${err.message}`);
-      } else {
-        setError("Invalid JSON");
-      }
+      setError(err instanceof Error ? `Invalid JSON: ${err.message}` : "Invalid JSON");
     }
   };
 
-  // clear messages when input changes
   const handleEditorChange = (val: string | undefined) => {
-    setValue(val || "");
-    if (error || success) {
-      setError(null);
-      setSuccess(null);
+    const newValue = val || "";
+    setValue(newValue);
+    setSuccess(null);
+
+    if (error) {
+      if (!newValue.trim()) {
+        setError(null);
+        return;
+      }
+
+      try {
+        parseJSON(newValue);
+        setError(null);
+      } catch {
+        // still invalid → keep error
+      }
     }
   };
 
@@ -87,11 +84,13 @@ export default function JsonFormatter() {
           {error}
         </div>
       )}
+
       {success && (
         <div className="p-3 bg-green-100 text-green-700 border border-green-300 rounded-md">
           {success}
         </div>
       )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <EditorPanel
           value={value}
@@ -106,12 +105,14 @@ export default function JsonFormatter() {
               >
                 Validate
               </button>
+
               <button
                 onClick={handleMinify}
                 className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs font-semibold rounded transition"
               >
                 Minify
               </button>
+
               <button
                 onClick={handlePrettyPrint}
                 className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded transition"
@@ -121,6 +122,7 @@ export default function JsonFormatter() {
             </div>
           }
         />
+
         <EditorPanel
           value={outputValue}
           language="json"
