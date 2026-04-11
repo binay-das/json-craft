@@ -13,6 +13,10 @@ export function ToolLayout() {
   if (pathName === 'json-formatter') {
     title = 'JSON Formatter';
     description = 'Format, validate, and beautify your JSON data instantly.';
+  } 
+  else if (pathName === 'csv-to-json') {
+    title = 'CSV → JSON Converter';
+    description = 'Convert structured CSV data into JSON format seamlessly.';
   }
 
   return (
