@@ -47,6 +47,18 @@ export default function CsvToJson() {
     setValue(val || "");
   };
 
+  const handleDownload = () => {
+    const blob = new Blob([outputValue], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "converted.json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-4">
@@ -81,6 +93,14 @@ export default function CsvToJson() {
           language="json"
           label="JSON Output"
           readOnly
+          toolbar={
+            <button
+              onClick={handleDownload}
+              className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded transition"
+            >
+              Download JSON
+            </button>
+          }
         />
       </div>
     </div>
