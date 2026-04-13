@@ -19,18 +19,38 @@ export default function DataValidator() {
       return false;
     };
 
-    if (schema.type && !checkType(data, schema.type)) {
-      errorList.push(`Root: Expected type ${schema.type}, but found ${data === null ? 'null' : Array.isArray(data) ? 'array' : typeof data}`);
-    } else if (schema.type === 'object' && typeof data === 'object' && data !== null && !Array.isArray(data)) {
-      if (Array.isArray(schema.required)) {
-        schema.required.forEach((key: string) => {
-          if (!(key in (data as any))) {
-            errorList.push(`Root: Missing required field "${key}"`);
-          }
-        });
-      }
-    }
+    const runValidation = (currentData: unknown, currentSchema: any, path: string) => {
+      if (!currentSchema) return;
 
+      const pathName = path || 'Root';
+
+      if (currentSchema.type && !checkType(currentData, currentSchema.type)) {
+        errorList.push(`${pathName}: Expected type ${currentSchema.type}, but found ${currentData === null ? 'null' : Array.isArray(currentData) ? 'array' : typeof currentData}`);
+        return; // Don't check further for this value if type is wrong
+      }
+
+      if (currentSchema.type === 'object' && typeof currentData === 'object' && currentData !== null && !Array.isArray(currentData)) {
+        // Check required fields
+        if (Array.isArray(currentSchema.required)) {
+          currentSchema.required.forEach((key: string) => {
+            if (!(key in (currentData as any))) {
+              errorList.push(`${pathName}: Missing required field "${key}"`);
+            }
+          });
+        }
+
+        // Recursively check properties
+        if (currentSchema.properties) {
+          Object.keys(currentSchema.properties).forEach((key) => {
+            if (key in (currentData as any)) {
+              runValidation((currentData as any)[key], currentSchema.properties[key], `${path}.${key}`);
+            }
+          });
+        }
+      }
+    };
+
+    runValidation(data, schema, '');
     return errorList;
   };
 
