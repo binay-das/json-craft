@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { Search, ChevronRight, Command } from 'lucide-react';
-import { useTheme } from '../context/ThemeContext';
+// import { useTheme } from '../context/ThemeContext';
 
 interface DocItem {
   id: string;
@@ -166,7 +166,7 @@ const GROUPS = [
 
 export default function Docs() {
   const [activeId, setActiveId] = useState('intro');
-  const { isDark } = useTheme();
+  // const { isDark } = useTheme();
   const currentItem = CONTENT[activeId] || CONTENT['intro'];
 
   return (
