@@ -72,16 +72,20 @@ export default function DataValidator() {
 
   return (
     <div className="flex flex-col gap-6">
-      {errors.length > 0 && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-md flex flex-col gap-2">
-          <span className="text-red-700 font-bold text-sm">Validation Errors:</span>
-          <ul className="text-red-600 text-sm list-disc pl-5">
-            {errors.map((err, i) => (
-              <li key={i}>{err}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <div className="flex justify-between items-center">
+        <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Validation Status</h2>
+        {errors.length === 0 ? (
+          <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold flex items-center gap-1">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            VALID
+          </span>
+        ) : (
+          <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold flex items-center gap-1">
+            <div className="w-2 h-2 bg-red-500 rounded-full" />
+            INVALID
+          </span>
+        )}
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <EditorPanel
           value={jsonData}
