@@ -1,10 +1,56 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { EditorPanel } from '../components/EditorPanel';
 
+interface Match {
+  text: string;
+  index: number;
+  groups: (string | undefined)[];
+}
+
 export default function RegexTester() {
-  const [pattern, setPattern] = useState<string>('');
+  const [pattern, setPattern] = useState<string>('fox');
   const [flags, setFlags] = useState<string>('g');
   const [testString, setTestString] = useState<string>('Regex is fun!');
+  const [matches, setMatches] = useState<Match[]>([]);
+
+  useEffect(() => {
+    if (!pattern.trim()) {
+      setMatches([]);
+      return;
+    }
+
+    try {
+      const regex = new RegExp(pattern, flags);
+      const newMatches: Match[] = [];
+
+      if (flags.includes('g')) {
+        let match;
+        regex.lastIndex = 0;
+        while ((match = regex.exec(testString)) !== null) {
+          if (match.index === regex.lastIndex && match[0].length === 0) {
+            regex.lastIndex++;
+          }
+          newMatches.push({
+            text: match[0],
+            index: match.index,
+            groups: match.slice(1),
+          });
+        }
+      } else {
+        const match = regex.exec(testString);
+        if (match) {
+          newMatches.push({
+            text: match[0],
+            index: match.index,
+            groups: match.slice(1),
+          });
+        }
+      }
+      setMatches(newMatches);
+    } catch (e) {
+      setMatches([]);
+    }
+  }, [pattern, flags, testString]);
 
   return (
     <div className="flex flex-col gap-6">
