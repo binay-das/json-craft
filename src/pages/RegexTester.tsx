@@ -10,10 +10,12 @@ interface Match {
 export default function RegexTester() {
   const [pattern, setPattern] = useState<string>('fox');
   const [flags, setFlags] = useState<string>('g');
-  const [testString, setTestString] = useState<string>('Regex is fun!');
+  const [testString, setTestString] = useState<string>('The quick brown fox jumps over the lazy dog.');
   const [matches, setMatches] = useState<Match[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    setError(null);
     if (!pattern.trim()) {
       setMatches([]);
       return;
@@ -25,8 +27,10 @@ export default function RegexTester() {
 
       if (flags.includes('g')) {
         let match;
+        // Reset lastIndex because of 'g' flag if we reuse the regex
         regex.lastIndex = 0;
         while ((match = regex.exec(testString)) !== null) {
+          // Prevent infinite loops with zero-width matches
           if (match.index === regex.lastIndex && match[0].length === 0) {
             regex.lastIndex++;
           }
@@ -48,6 +52,7 @@ export default function RegexTester() {
       }
       setMatches(newMatches);
     } catch (e) {
+      setError(e instanceof Error ? e.message : 'Invalid regular expression');
       setMatches([]);
     }
   }, [pattern, flags, testString]);
@@ -78,6 +83,18 @@ export default function RegexTester() {
 
   return (
     <div className="flex flex-col gap-6">
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-md flex items-start gap-3 text-red-700 animate-[fadeInUp_0.2s_ease-out]">
+          <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div className="flex flex-col gap-1">
+            <span className="font-bold text-sm underline decoration-red-200">Invalid Regular Expression</span>
+            <code className="text-xs bg-red-100/50 p-1 rounded font-mono">{error}</code>
+          </div>
+        </div>
+      )}
+
       <div className="flex gap-3 items-start">
         <div className="flex-1 flex flex-col gap-1">
           <label htmlFor="regex-pattern" className="text-sm font-medium text-gray-700">
