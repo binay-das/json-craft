@@ -52,6 +52,30 @@ export default function RegexTester() {
     }
   }, [pattern, flags, testString]);
 
+  const escapeHtml = (text: string) => {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  };
+
+  const getHighlightedText = () => {
+    if (!testString) return '';
+    if (matches.length === 0) return escapeHtml(testString);
+
+    let result = '';
+    let lastIndex = 0;
+
+    matches.forEach((match) => {
+      result += escapeHtml(testString.substring(lastIndex, match.index));
+      result += `<mark class="bg-yellow-200 text-yellow-900 rounded-sm px-0.5">${escapeHtml(match.text)}</mark>`;
+      lastIndex = match.index + match.text.length;
+    });
+
+    // Add remaining text
+    result += escapeHtml(testString.substring(lastIndex));
+    return result;
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex gap-3 items-start">
@@ -91,16 +115,28 @@ export default function RegexTester() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-gray-700">
-          Test String
-        </label>
-        <EditorPanel
-          value={testString}
-          onChange={(val) => setTestString(val || '')}
-          language="plaintext"
-          label="Input string to test matches"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">
+            Test String
+          </label>
+          <EditorPanel
+            value={testString}
+            onChange={(val) => setTestString(val || '')}
+            language="plaintext"
+            label="Input string to test matches"
+          />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">
+            Preview
+          </label>
+          <div 
+            className="flex-1 min-h-[400px] border border-gray-300 rounded-md p-4 bg-white overflow-auto font-mono text-sm whitespace-pre-wrap break-all"
+            dangerouslySetInnerHTML={{ __html: getHighlightedText() || '<span class="text-gray-400 italic">No matches to highlight</span>' }}
+          />
+        </div>
       </div>
 
       {(!pattern.trim()) && (
