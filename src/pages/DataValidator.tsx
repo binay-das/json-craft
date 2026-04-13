@@ -21,6 +21,14 @@ export default function DataValidator() {
 
     if (schema.type && !checkType(data, schema.type)) {
       errorList.push(`Root: Expected type ${schema.type}, but found ${data === null ? 'null' : Array.isArray(data) ? 'array' : typeof data}`);
+    } else if (schema.type === 'object' && typeof data === 'object' && data !== null && !Array.isArray(data)) {
+      if (Array.isArray(schema.required)) {
+        schema.required.forEach((key: string) => {
+          if (!(key in (data as any))) {
+            errorList.push(`Root: Missing required field "${key}"`);
+          }
+        });
+      }
     }
 
     return errorList;
