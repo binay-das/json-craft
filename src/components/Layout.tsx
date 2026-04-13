@@ -1,143 +1,243 @@
 import { useState } from 'react';
-import { Outlet, Link, NavLink } from 'react-router-dom';
-import { ROUTES } from '../config/routes';
 import { TOOLS } from '../config/tools';
-import { ChevronDown, Menu, X, Terminal } from 'lucide-react';
+import { ROUTES } from '../config/routes';
+import { Outlet, Link, NavLink } from 'react-router-dom';
+import { ChevronDown, Menu, X, Braces } from 'lucide-react';
 
 export function Layout() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isToolsDropdownOpen, setIsToolsDropdownOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isToolsDropdownOpen, setIsToolsDropdownOpen] = useState<boolean>(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center gap-10">
-              <Link to={ROUTES.HOME} className="flex items-center gap-2 text-xl font-bold text-gray-900 overflow-hidden group">
-                <div className="p-1.5 bg-blue-600 rounded text-white group-hover:rotate-12 transition-transform">
-                  <Terminal size={18} />
-                </div>
-                <span>JSONCraft</span>
-              </Link>
-              
-              <nav className="hidden md:flex space-x-1 lg:space-x-4">
-                <NavLink 
-                  to={ROUTES.HOME} 
-                  end
-                  className={({ isActive }) => 
-                    `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      isActive ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
-                    }`
-                  }
-                >
-                  Home
-                </NavLink>
-                
-                <div className="relative">
-                  <button
-                    onMouseEnter={() => setIsToolsDropdownOpen(true)}
-                    className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
-                  >
-                    Tools
-                    <ChevronDown size={14} className={`transform transition-transform ${isToolsDropdownOpen ? 'rotate-180' : ''}`} />
-                  </button>
-
-                  {/* Desktop Dropdown */}
-                  {isToolsDropdownOpen && (
-                    <div 
-                      onMouseLeave={() => setIsToolsDropdownOpen(false)}
-                      className="absolute top-full left-0 w-80 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden animate-[fadeInUp_0.2s_ease-out]"
-                    >
-                      <div className="p-2 grid grid-cols-1 divide-y divide-gray-50">
-                        {TOOLS.map((tool) => {
-                          const Icon = tool.icon;
-                          return (
-                            <Link
-                              key={tool.id}
-                              to={tool.href}
-                              onClick={() => setIsToolsDropdownOpen(false)}
-                              className="group flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 transition-colors"
-                            >
-                              <div className="p-2 rounded-lg bg-gray-50 text-gray-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                <Icon size={18} />
-                              </div>
-                              <div>
-                                <div className="text-sm font-semibold text-gray-900">{tool.name}</div>
-                                <div className="text-xs text-gray-500 line-clamp-1">{tool.description}</div>
-                              </div>
-                            </Link>
-                          );
-                        })}
-                      </div>
-                      <Link 
-                        to={ROUTES.TOOLS}
-                        className="block py-3 px-4 bg-gray-50 text-center text-xs font-bold text-blue-600 hover:bg-gray-100 uppercase tracking-widest border-t border-gray-100"
-                        onClick={() => setIsToolsDropdownOpen(false)}
-                      >
-                        All Tools Dashboard
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              </nav>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-base)', color: 'var(--text-primary)' }}>
+      <header style={{
+        position: 'sticky', top: 0, zIndex: 50,
+        background: 'rgba(11,13,17,0.85)',
+        backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid var(--border)',
+      }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 60 }}>
+          <Link to={ROUTES.HOME} style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: 'inherit' }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: 8,
+              background: 'linear-gradient(135deg, #3b82f6, #22d3a5)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Braces size={18} color="#fff" />
             </div>
+            <span style={{ fontWeight: 700, fontSize: '1.05rem', letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
+              JSON<span style={{ color: '#3b82f6' }}>Craft</span>
+            </span>
+          </Link>
 
-            {/* Mobile menu button */}
-            <div className="flex md:hidden items-center">
+          <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }} className="hidden-mobile">
+            <div style={{ position: 'relative' }}
+              onMouseLeave={() => setIsToolsDropdownOpen(false)}
+            >
               <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+                onMouseEnter={() => setIsToolsDropdownOpen(true)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 4,
+                  padding: '6px 12px', borderRadius: 6, border: 'none',
+                  background: 'transparent', color: 'var(--text-secondary)',
+                  fontSize: '0.875rem', fontWeight: 500, cursor: 'pointer',
+                  transition: 'color 0.15s',
+                }}
+                onMouseOver={e => (e.currentTarget.style.color = 'var(--text-primary)')}
+                onMouseOut={e => (e.currentTarget.style.color = 'var(--text-secondary)')}
               >
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                Tools
+                <ChevronDown size={13} style={{ transform: isToolsDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }} />
               </button>
+
+              {isToolsDropdownOpen && (
+                <div style={{
+                  position: 'absolute', top: '100%', left: 0, minWidth: 300, marginTop: 4,
+                  background: 'var(--bg-elevated)', border: '1px solid var(--border)',
+                  borderRadius: 12, boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
+                  overflow: 'hidden', animation: 'fadeInUp 0.15s ease-out',
+                }}>
+                  <div style={{ padding: 8 }}>
+                    {TOOLS.map((tool) => {
+                      const Icon = tool.icon;
+                      return (
+                        <Link
+                          key={tool.id}
+                          to={tool.href}
+                          onClick={() => setIsToolsDropdownOpen(false)}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 10,
+                            padding: '10px 12px', borderRadius: 8, textDecoration: 'none',
+                            color: 'var(--text-primary)', transition: 'background 0.15s',
+                          }}
+                          onMouseOver={e => (e.currentTarget.style.background = 'var(--bg-card)')}
+                          onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
+                        >
+                          <div style={{
+                            width: 32, height: 32, borderRadius: 8,
+                            background: 'var(--bg-card)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: '#3b82f6', flexShrink: 0,
+                          }}>
+                            <Icon size={16} />
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '0.825rem', fontWeight: 600 }}>{tool.name}</div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.3 }}>{tool.description}</div>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                  <Link
+                    to={ROUTES.TOOLS}
+                    onClick={() => setIsToolsDropdownOpen(false)}
+                    style={{
+                      display: 'block', padding: '10px 20px', textAlign: 'center',
+                      fontSize: '0.75rem', fontWeight: 600, color: '#3b82f6',
+                      textDecoration: 'none', borderTop: '1px solid var(--border)',
+                      background: 'var(--bg-surface)', letterSpacing: '0.05em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    All Tools →
+                  </Link>
+                </div>
+              )}
             </div>
+
+            {[
+              { label: 'Converters', to: ROUTES.TOOLS },
+              { label: 'Validators', to: ROUTES.TOOLS },
+              { label: 'Docs', to: ROUTES.DOCS }
+            ].map(item => (
+              <NavLink
+                key={item.label}
+                to={item.to}
+                style={({ isActive }) => ({
+                  padding: '6px 12px', borderRadius: 6, textDecoration: 'none',
+                  fontSize: '0.875rem', fontWeight: 500,
+                  color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+                  transition: 'color 0.15s',
+                })}
+                onMouseOver={e => (e.currentTarget.style.color = 'var(--text-primary)')}
+                onMouseOut={e => (e.currentTarget.style.color = 'var(--text-secondary)')}
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Link
+              to={ROUTES.TOOLS}
+              style={{
+                padding: '7px 18px', borderRadius: 8, textDecoration: 'none',
+                background: '#3b82f6', color: '#fff',
+                fontSize: '0.825rem', fontWeight: 600,
+                transition: 'opacity 0.15s, transform 0.15s',
+              }}
+              onMouseOver={e => { (e.currentTarget as HTMLElement).style.opacity = '0.85'; }}
+              onMouseOut={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
+            >
+              Try it Free
+            </Link>
+
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              style={{
+                display: 'none', padding: 6, border: 'none',
+                background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer',
+              }}
+              className="show-mobile"
+            >
+              {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
           </div>
         </div>
 
-        {/* Mobile menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-200 animate-in slide-in-from-top duration-200">
-            <div className="px-2 pt-2 pb-3 space-y-1">
+          <div style={{
+            background: 'var(--bg-elevated)', borderTop: '1px solid var(--border)',
+            padding: '12px 24px 20px', animation: 'fadeInUp 0.2s ease-out',
+          }}>
+            <Link
+              to={ROUTES.DOCS}
+              onClick={() => setIsMenuOpen(false)}
+              style={{
+                display: 'block', padding: '8px 0', textDecoration: 'none',
+                color: 'var(--text-secondary)', fontSize: '0.9rem', borderBottom: '1px solid var(--border)',
+              }}
+            >
+              Documentation
+            </Link>
+            <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8, marginTop: 12 }}>Tools</div>
+            {TOOLS.map((tool) => (
               <Link
-                to={ROUTES.HOME}
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50"
+                key={tool.id}
+                to={tool.href}
                 onClick={() => setIsMenuOpen(false)}
+                style={{
+                  display: 'block', padding: '8px 0', textDecoration: 'none',
+                  color: 'var(--text-secondary)', fontSize: '0.9rem', borderBottom: '1px solid var(--border)',
+                }}
               >
-                Home
+                {tool.name}
               </Link>
-              <div className="px-3 py-2 text-xs font-bold text-gray-400 uppercase tracking-widest">Tools</div>
-              {TOOLS.map((tool) => (
-                <Link
-                  key={tool.id}
-                  to={tool.href}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 pl-6"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {tool.name}
-                </Link>
-              ))}
-              <Link
-                to={ROUTES.TOOLS}
-                className="block px-3 py-2 rounded-md text-base font-bold text-blue-600 hover:bg-blue-50"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Full Dashboard
-              </Link>
-            </div>
+            ))}
           </div>
         )}
       </header>
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+      <main style={{ flex: 1, width: '100%' }}>
         <Outlet />
       </main>
 
-      <footer className="bg-white border-t border-gray-200 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
-          <p>© {new Date().getFullYear()} JSONCraft. All manipulations are local-only.</p>
+      <footer style={{
+        borderTop: '1px solid var(--border)',
+        background: 'var(--bg-surface)',
+        padding: '40px 24px',
+      }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 32 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <div style={{
+                width: 28, height: 28, borderRadius: 7,
+                background: 'linear-gradient(135deg, #3b82f6, #22d3a5)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Braces size={15} color="#fff" />
+              </div>
+              <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>JSONCraft</span>
+            </div>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', maxWidth: 220, lineHeight: 1.6 }}>
+              © {new Date().getFullYear()} JSONCraft. The JSON architect's toolkit.
+            </p>
+          </div>
+
+          {[
+            { title: 'Documentation', links: [{ l: 'Getting Started', to: ROUTES.DOCS }, { l: 'API Reference', to: ROUTES.DOCS }, { l: 'Changelog', to: ROUTES.DOCS }] },
+            { title: 'Tools', links: [{ l: 'JSON Formatter', to: '/tool/json-formatter' }, { l: 'CSV to JSON', to: '/tool/csv-to-json' }, { l: 'Schema Generator', to: '/tool/json-schema' }, { l: 'Mock Engine', to: '/tool/api-mock' }] },
+            { title: 'Legal', links: [{ l: 'Privacy Policy', to: '/docs' }, { l: 'Terms of Service', to: '/docs' }] },
+          ].map(group => (
+            <div key={group.title}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>{group.title}</div>
+              {group.links.map(link => (
+                <Link key={link.l} to={link.to} style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-secondary)', textDecoration: 'none', marginBottom: 6, transition: 'color 0.15s' }}
+                  onMouseOver={e => (e.currentTarget.style.color = 'var(--text-primary)')}
+                  onMouseOut={e => (e.currentTarget.style.color = 'var(--text-secondary)')}
+                >{link.l}</Link>
+              ))}
+            </div>
+          ))}
         </div>
       </footer>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .hidden-mobile { display: none !important; }
+          .show-mobile   { display: flex !important; }
+        }
+      `}</style>
     </div>
   );
 }
