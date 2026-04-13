@@ -1,41 +1,24 @@
 import { Outlet, Link, useParams, useLocation } from 'react-router-dom';
 import { ROUTES } from '../config/routes';
+import { TOOLS } from '../config/tools';
+import { ArrowLeft } from 'lucide-react';
 
 export function ToolLayout() {
   const { name } = useParams();
   const location = useLocation();
   const pathName = name || location.pathname.split('/').filter(Boolean).pop();
 
-  let title = pathName ? pathName.replace('-', ' ') : 'Tool';
-  let description = 'Use this tool to process your data efficiently.';
-
-  // specific overrides
-  if (pathName === 'json-formatter') {
-    title = 'JSON Formatter';
-    description = 'Format, validate, and beautify your JSON data instantly.';
-  } 
-  else if (pathName === 'csv-to-json') {
-    title = 'CSV → JSON Converter';
-    description = 'Convert structured CSV data into JSON format seamlessly.';
-  } else if (pathName === 'json-schema') {
-    title = 'JSON Schema Generator';
-    description = 'Automatically generate JSON Schema definitions from your JSON data.';
-  } else if (pathName === 'api-mock') {
-    title = 'API Mock Generator';
-    description = 'Generate mock API responses and boilerplate fetch/curl snippets from your API definition.';
-  } else if (pathName === 'regex-tester') {
-    title = 'Regex Tester';
-    description = 'Test regular expressions against any string and see matches highlighted in real time.';
-  } else if (pathName === 'data-validator') {
-    title = 'Data Validator';
-    description = 'Validate JSON data against a JSON Schema to ensure structural integrity and correctness.';
-  }
+  const currentTool = TOOLS.find(t => t.href.endsWith(pathName || ''));
+  
+  const title = currentTool ? currentTool.name : (pathName ? pathName.replace('-', ' ') : 'Tool');
+  const description = currentTool ? currentTool.description : 'Use this tool to process your data efficiently.';
 
   return (
     <div className="bg-white shadow rounded-lg p-6">
       <div className="mb-6 border-b border-gray-200 pb-4">
-        <Link to={ROUTES.TOOLS} className="text-sm text-blue-600 hover:text-blue-800 flex items-center mb-4">
-          &larr; Back to Tools
+        <Link to={ROUTES.TOOLS} className="text-sm font-medium text-blue-600 hover:text-blue-800 inline-flex items-center gap-1.5 mb-4 group transition-colors">
+          <ArrowLeft size={16} className="transform group-hover:-translate-x-1 transition-transform" />
+          Back to Tools
         </Link>
         <h1 className="text-2xl font-bold text-gray-900 capitalize text-left">
           {title}

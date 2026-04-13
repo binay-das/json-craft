@@ -1,61 +1,45 @@
-import { useState } from "react";
-import { EditorPanel } from "../components/EditorPanel";
+import { Link } from 'react-router-dom';
+import { TOOLS } from '../config/tools';
+import { ChevronRight } from 'lucide-react';
 
 export default function Tools() {
-  const [editorPanelValue, setEditorPanelValue] = useState<string>("{\n  \"hello\": \"world\"\n}");
-  const [readOnly, setReadOnly] = useState<boolean>(false);
-  const [language, setLanguage] = useState<string>("json");
-
-  const copyToClipboard = async (toCopy: string) => {
-    await navigator.clipboard.writeText(toCopy);
-    alert("copied!");
-  }
-
   return (
-    <div className="p-4 space-y-4">
-      <h1 className="text-2xl font-bold">Tools </h1>
-
-      <div className="flex gap-4 items-center">
-        <label className="flex items-center gap-2">
-          <input 
-            type="checkbox" 
-            checked={readOnly} 
-            onChange={(e) => setReadOnly(e.target.checked)} 
-          />
-          Read Only
-        </label>
-
-        <label className="flex items-center gap-2">
-          Language:
-          <select 
-            value={language} 
-            onChange={(e) => setLanguage(e.target.value)}
-            className="border border-gray-300 rounded px-2 py-1"
-          >
-            <option value="json">JSON</option>
-            <option value="javascript">JavaScript</option>
-            <option value="typescript">TypeScript</option>
-            <option value="html">HTML</option>
-          </select>
-        </label>
+    <div className="flex flex-col gap-8">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">Developer Tools</h1>
+        <p className="mt-2 text-gray-600">
+          A collection of powerful utilities for developers. Manipulate, validate, and generate data with ease.
+        </p>
       </div>
 
-      <EditorPanel
-        value={editorPanelValue}
-        onChange={(value) => setEditorPanelValue(value || "")}
-        language={language}
-        readOnly={readOnly}
-        label="Input Data"
-        toolbar={
-          <button 
-            onClick={() => copyToClipboard(editorPanelValue)}
-            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-          >
-            Copy
-          </button>
-        }
-      />
-
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {TOOLS.map((tool) => {
+          const Icon = tool.icon;
+          return (
+            <Link
+              key={tool.id}
+              to={tool.href}
+              className="group flex flex-col p-6 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-400 transition-all"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2.5 rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  <Icon className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                  {tool.name}
+                </h3>
+              </div>
+              <p className="text-sm text-gray-500 flex-1 leading-relaxed">
+                {tool.description}
+              </p>
+              <div className="mt-6 flex items-center text-sm font-medium text-blue-600">
+                Open Tool
+                <ChevronRight className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }
