@@ -10,6 +10,7 @@ import CsvToJson from './pages/CsvToJson';
 import JsonSchemaGenerator from './pages/JsonSchemaGenerator';
 import ApiMockGenerator from './pages/ApiMockGenerator';
 import RegexTester from './pages/RegexTester';
+import DataValidator from './pages/DataValidator';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="json-schema" element={<JsonSchemaGenerator />} />
           <Route path="api-mock" element={<ApiMockGenerator />} />
           <Route path="regex-tester" element={<RegexTester />} />
+          <Route path="data-validator" element={<DataValidator />} />
           <Route path=":name" element={<ToolDetail />} />
         </Route>
       </Route>

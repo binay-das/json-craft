@@ -26,6 +26,9 @@ export function ToolLayout() {
   } else if (pathName === 'regex-tester') {
     title = 'Regex Tester';
     description = 'Test regular expressions against any string and see matches highlighted in real time.';
+  } else if (pathName === 'data-validator') {
+    title = 'Data Validator';
+    description = 'Validate JSON data against a JSON Schema to ensure structural integrity and correctness.';
   }
 
   return (
