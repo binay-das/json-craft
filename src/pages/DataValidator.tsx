@@ -47,6 +47,12 @@ export default function DataValidator() {
             }
           });
         }
+      } else if (currentSchema.type === 'array' && Array.isArray(currentData)) {
+        if (currentSchema.items) {
+          currentData.forEach((item, index) => {
+            runValidation(item, currentSchema.items, `${path}[${index}]`);
+          });
+        }
       }
     };
 
