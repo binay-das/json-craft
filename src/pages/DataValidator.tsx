@@ -96,6 +96,23 @@ export default function DataValidator() {
           label="JSON Schema"
         />
       </div>
+
+      <div className="flex flex-col gap-2">
+        <h3 className="text-sm font-semibold text-gray-700">Validation Results</h3>
+        {errors.length > 0 ? (
+          <div className="flex flex-col gap-2">
+            {errors.map((error, index) => (
+              <div key={index} className="p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-700 font-mono">
+                {error}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-4 bg-green-50 border border-green-200 rounded-md text-sm text-green-700">
+            Data is valid!
+          </div>
+        )}
+      </div>
     </div>
   );
 }
