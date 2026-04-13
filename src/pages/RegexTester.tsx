@@ -158,6 +158,19 @@ export default function RegexTester() {
                 <div className="text-sm font-mono truncate bg-white p-1.5 border border-gray-100 rounded">
                   {match.text || <span className="text-gray-400 italic">Zero-width match</span>}
                 </div>
+                {match.groups.length > 0 && (
+                  <div className="mt-2 flex flex-col gap-1">
+                    <span className="text-[10px] font-semibold text-gray-400 uppercase">Groups</span>
+                    <div className="flex flex-wrap gap-1">
+                      {match.groups.map((group, groupIdx) => (
+                        <div key={groupIdx} className="flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 border border-blue-100 rounded text-[10px] font-mono text-blue-700">
+                          <span className="opacity-50">${groupIdx + 1}:</span>
+                          <span className="font-bold">{group === undefined ? 'undefined' : group}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
