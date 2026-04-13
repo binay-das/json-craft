@@ -1,10 +1,38 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { EditorPanel } from '../components/EditorPanel';
+
+function Toast({ message, type, onDone }: { message: string, type: 'success' | 'error', onDone: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, 3000);
+    return () => clearTimeout(t);
+  }, [onDone]);
+
+  return (
+    <div
+      className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-lg text-white px-4 py-2.5 text-sm font-medium shadow-lg animate-[fadeInUp_0.25s_ease-out] ${
+        type === 'success' ? 'bg-green-600' : 'bg-red-600'
+      }`}
+    >
+      {type === 'success' ? (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+      ) : (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      )}
+      {message}
+    </div>
+  );
+}
 
 export default function DataValidator() {
   const [jsonData, setJsonData] = useState<string>('{\n  "name": "John Doe",\n  "age": 30,\n  "email": "john@example.com"\n}');
   const [jsonSchema, setJsonSchema] = useState<string>('{\n  "type": "object",\n  "properties": {\n    "name": { "type": "string" },\n    "age": { "type": "number" },\n    "email": { "type": "string" }\n  },\n  "required": ["name", "email"]\n}');
   const [errors, setErrors] = useState<string[]>([]);
+  const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
+  const prevValid = useRef<boolean | null>(null);
 
   const validate = (data: unknown, schema: any): string[] => {
     const errorList: string[] = [];
@@ -61,13 +89,30 @@ export default function DataValidator() {
   };
 
   useEffect(() => {
+    let currentErrors: string[] = [];
+    let isValid = false;
+
     try {
       const data = JSON.parse(jsonData);
       const schema = JSON.parse(jsonSchema);
-      setErrors(validate(data, schema));
+      currentErrors = validate(data, schema);
+      isValid = currentErrors.length === 0;
     } catch (e) {
-      setErrors(['Invalid JSON in data or schema']);
+      currentErrors = ['Invalid JSON in data or schema'];
+      isValid = false;
     }
+
+    setErrors(currentErrors);
+
+    // Toast logic
+    if (prevValid.current !== null && prevValid.current !== isValid) {
+      if (isValid) {
+        setToast({ message: 'JSON Data is now valid!', type: 'success' });
+      } else {
+        setToast({ message: 'Validation failed!', type: 'error' });
+      }
+    }
+    prevValid.current = isValid;
   }, [jsonData, jsonSchema]);
 
   return (
@@ -117,6 +162,14 @@ export default function DataValidator() {
           </div>
         )}
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onDone={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }
