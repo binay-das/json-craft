@@ -1,175 +1,135 @@
 import { useState, useEffect, useRef } from 'react';
 import { EditorPanel } from '../components/EditorPanel';
 
-function Toast({ message, type, onDone }: { message: string, type: 'success' | 'error', onDone: () => void }) {
-  useEffect(() => {
-    const t = setTimeout(onDone, 3000);
-    return () => clearTimeout(t);
-  }, [onDone]);
-
+function Toast({ message, type, onDone }: { message: string; type: 'success' | 'error'; onDone: () => void }) {
+  useEffect(() => { const t = setTimeout(onDone, 3000); return () => clearTimeout(t); }, [onDone]);
   return (
-    <div
-      className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-lg text-white px-4 py-2.5 text-sm font-medium shadow-lg animate-[fadeInUp_0.25s_ease-out] ${
-        type === 'success' ? 'bg-green-600' : 'bg-red-600'
-      }`}
-    >
-      {type === 'success' ? (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-        </svg>
-      ) : (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      )}
-      {message}
+    <div style={{
+      position: 'fixed', bottom: 24, right: 24, zIndex: 50,
+      display: 'flex', alignItems: 'center', gap: 8,
+      padding: '10px 16px', borderRadius: 10, fontSize: '0.85rem', fontWeight: 600,
+      animation: 'fadeInUp 0.25s ease-out',
+      background: type === 'success' ? 'rgba(34,211,165,0.15)' : 'rgba(239,68,68,0.15)',
+      border: `1px solid ${type === 'success' ? 'rgba(34,211,165,0.4)' : 'rgba(239,68,68,0.4)'}`,
+      color: type === 'success' ? '#22d3a5' : '#ef4444',
+    }}>
+      {type === 'success' ? '✓' : '✕'} {message}
     </div>
   );
 }
 
 export default function DataValidator() {
-  const [jsonData, setJsonData] = useState<string>('{\n  "name": "John Doe",\n  "age": 30,\n  "email": "john@example.com"\n}');
-  const [jsonSchema, setJsonSchema] = useState<string>('{\n  "type": "object",\n  "properties": {\n    "name": { "type": "string" },\n    "age": { "type": "number" },\n    "email": { "type": "string" }\n  },\n  "required": ["name", "email"]\n}');
+  const [jsonData,   setJsonData]   = useState<string>('{\n  "name": "John Doe",\n  "age": 30,\n  "email": "john@example.com"\n}');
+  const [jsonSchema, setJsonSchema] = useState<string>('{\n  "type": "object",\n  "properties": {\n    "name": { "type": "string" },\n    "age":  { "type": "number" },\n    "email": { "type": "string" }\n  },\n  "required": ["name", "email"]\n}');
   const [errors, setErrors] = useState<string[]>([]);
-  const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
+  const [toast,  setToast]  = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const prevValid = useRef<boolean | null>(null);
 
   const validate = (data: unknown, schema: any): string[] => {
     const errorList: string[] = [];
-
-    const checkType = (value: unknown, targetType: string): boolean => {
-      if (targetType === 'string') return typeof value === 'string';
-      if (targetType === 'number') return typeof value === 'number';
-      if (targetType === 'boolean') return typeof value === 'boolean';
-      if (targetType === 'object') return typeof value === 'object' && value !== null && !Array.isArray(value);
-      if (targetType === 'array') return Array.isArray(value);
-      if (targetType === 'null') return value === null;
+    const checkType = (v: unknown, t: string) => {
+      if (t === 'string')  return typeof v === 'string';
+      if (t === 'number')  return typeof v === 'number';
+      if (t === 'boolean') return typeof v === 'boolean';
+      if (t === 'object')  return typeof v === 'object' && v !== null && !Array.isArray(v);
+      if (t === 'array')   return Array.isArray(v);
+      if (t === 'null')    return v === null;
       return false;
     };
-
-    const runValidation = (currentData: unknown, currentSchema: any, path: string) => {
-      if (!currentSchema) return;
-
-      const pathName = path || 'Root';
-
-      if (currentSchema.type && !checkType(currentData, currentSchema.type)) {
-        errorList.push(`${pathName}: Expected type ${currentSchema.type}, but found ${currentData === null ? 'null' : Array.isArray(currentData) ? 'array' : typeof currentData}`);
-        return; // Don't check further for this value if type is wrong
+    const run = (d: unknown, s: any, path: string) => {
+      if (!s) return;
+      const p = path || 'Root';
+      if (s.type && !checkType(d, s.type)) {
+        errorList.push(`${p}: Expected type "${s.type}", found "${d === null ? 'null' : Array.isArray(d) ? 'array' : typeof d}"`);
+        return;
       }
-
-      if (currentSchema.type === 'object' && typeof currentData === 'object' && currentData !== null && !Array.isArray(currentData)) {
-        // Check required fields
-        if (Array.isArray(currentSchema.required)) {
-          currentSchema.required.forEach((key: string) => {
-            if (!(key in (currentData as any))) {
-              errorList.push(`${pathName}: Missing required field "${key}"`);
-            }
-          });
-        }
-
-        // Recursively check properties
-        if (currentSchema.properties) {
-          Object.keys(currentSchema.properties).forEach((key) => {
-            if (key in (currentData as any)) {
-              runValidation((currentData as any)[key], currentSchema.properties[key], `${path}.${key}`);
-            }
-          });
-        }
-      } else if (currentSchema.type === 'array' && Array.isArray(currentData)) {
-        if (currentSchema.items) {
-          currentData.forEach((item, index) => {
-            runValidation(item, currentSchema.items, `${path}[${index}]`);
-          });
-        }
+      if (s.type === 'object' && typeof d === 'object' && d !== null && !Array.isArray(d)) {
+        if (Array.isArray(s.required)) s.required.forEach((k: string) => { if (!(k in (d as any))) errorList.push(`${p}: Missing required field "${k}"`); });
+        if (s.properties) Object.keys(s.properties).forEach(k => { if (k in (d as any)) run((d as any)[k], s.properties[k], `${path}.${k}`); });
+      } else if (s.type === 'array' && Array.isArray(d)) {
+        if (s.items) d.forEach((item, i) => run(item, s.items, `${path}[${i}]`));
       }
     };
-
-    runValidation(data, schema, '');
+    run(data, schema, '');
     return errorList;
   };
 
   useEffect(() => {
     let currentErrors: string[] = [];
     let isValid = false;
-
     try {
-      const data = JSON.parse(jsonData);
-      const schema = JSON.parse(jsonSchema);
-      currentErrors = validate(data, schema);
+      currentErrors = validate(JSON.parse(jsonData), JSON.parse(jsonSchema));
       isValid = currentErrors.length === 0;
-    } catch (e) {
+    } catch {
       currentErrors = ['Invalid JSON in data or schema'];
-      isValid = false;
     }
-
     setErrors(currentErrors);
-
-    // Toast logic
     if (prevValid.current !== null && prevValid.current !== isValid) {
-      if (isValid) {
-        setToast({ message: 'JSON Data is now valid!', type: 'success' });
-      } else {
-        setToast({ message: 'Validation failed!', type: 'error' });
-      }
+      setToast(isValid
+        ? { message: 'JSON Data is valid!', type: 'success' }
+        : { message: 'Validation failed!', type: 'error' }
+      );
     }
     prevValid.current = isValid;
   }, [jsonData, jsonSchema]);
 
+  const isValid = errors.length === 0;
+
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Validation Status</h2>
-        {errors.length === 0 ? (
-          <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold flex items-center gap-1">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            VALID
-          </span>
-        ) : (
-          <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold flex items-center gap-1">
-            <div className="w-2 h-2 bg-red-500 rounded-full" />
-            INVALID
-          </span>
-        )}
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <EditorPanel
-          value={jsonData}
-          onChange={(val) => setJsonData(val || '')}
-          language="json"
-          label="JSON Data"
-        />
-        <EditorPanel
-          value={jsonSchema}
-          onChange={(val) => setJsonSchema(val || '')}
-          language="json"
-          label="JSON Schema"
-        />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* Status bar */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+          Validation Status
+        </span>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '4px 12px', borderRadius: 999,
+          fontSize: '0.72rem', fontWeight: 700, fontFamily: 'var(--font-mono)',
+          background: isValid ? 'rgba(34,211,165,0.12)' : 'rgba(239,68,68,0.12)',
+          border: `1px solid ${isValid ? 'rgba(34,211,165,0.35)' : 'rgba(239,68,68,0.35)'}`,
+          color: isValid ? '#22d3a5' : '#ef4444',
+        }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: isValid ? '#22d3a5' : '#ef4444', animation: isValid ? 'none' : undefined }} />
+          {isValid ? 'VALID' : 'INVALID'}
+        </span>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <h3 className="text-sm font-semibold text-gray-700">Validation Results</h3>
+      {/* Editors */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <EditorPanel value={jsonData}   onChange={v => setJsonData(v || '')}   language="json" label="JSON Data" />
+        <EditorPanel value={jsonSchema} onChange={v => setJsonSchema(v || '')} language="json" label="JSON Schema" />
+      </div>
+
+      {/* Results */}
+      <div>
+        <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 10 }}>
+          Validation Results
+        </div>
         {errors.length > 0 ? (
-          <div className="flex flex-col gap-2">
-            {errors.map((error, index) => (
-              <div key={index} className="p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-700 font-mono">
-                {error}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {errors.map((err, i) => (
+              <div key={i} style={{
+                padding: '10px 14px', borderRadius: 8,
+                background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)',
+                fontFamily: 'var(--font-mono)', fontSize: '0.82rem', color: '#ef4444',
+              }}>
+                {err}
               </div>
             ))}
           </div>
         ) : (
-          <div className="p-4 bg-green-50 border border-green-200 rounded-md text-sm text-green-700">
-            Data is valid!
+          <div style={{
+            padding: '14px 18px', borderRadius: 8,
+            background: 'rgba(34,211,165,0.08)', border: '1px solid rgba(34,211,165,0.25)',
+            fontSize: '0.85rem', color: '#22d3a5', fontFamily: 'var(--font-mono)',
+          }}>
+            ✓ Data matches the schema.
           </div>
         )}
       </div>
 
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onDone={() => setToast(null)}
-        />
-      )}
+      {toast && <Toast message={toast.message} type={toast.type} onDone={() => setToast(null)} />}
     </div>
   );
 }

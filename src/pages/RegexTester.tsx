@@ -7,6 +7,18 @@ interface Match {
   groups: (string | undefined)[];
 }
 
+const inputStyle: React.CSSProperties = {
+  background: 'var(--bg-elevated)',
+  border: '1px solid var(--border)',
+  borderRadius: 8,
+  padding: '8px 12px',
+  color: 'var(--text-primary)',
+  fontSize: '0.875rem',
+  fontFamily: 'var(--font-mono)',
+  outline: 'none',
+  transition: 'border-color 0.15s',
+};
+
 export default function RegexTester() {
   const [pattern, setPattern] = useState<string>('fox');
   const [flags, setFlags] = useState<string>('g');
@@ -16,39 +28,20 @@ export default function RegexTester() {
 
   useEffect(() => {
     setError(null);
-    if (!pattern.trim()) {
-      setMatches([]);
-      return;
-    }
-
+    if (!pattern.trim()) { setMatches([]); return; }
     try {
       const regex = new RegExp(pattern, flags);
       const newMatches: Match[] = [];
-
       if (flags.includes('g')) {
-        let match;
-        // Reset lastIndex because of 'g' flag if we reuse the regex
         regex.lastIndex = 0;
+        let match;
         while ((match = regex.exec(testString)) !== null) {
-          // Prevent infinite loops with zero-width matches
-          if (match.index === regex.lastIndex && match[0].length === 0) {
-            regex.lastIndex++;
-          }
-          newMatches.push({
-            text: match[0],
-            index: match.index,
-            groups: match.slice(1),
-          });
+          if (match.index === regex.lastIndex && match[0].length === 0) regex.lastIndex++;
+          newMatches.push({ text: match[0], index: match.index, groups: match.slice(1) });
         }
       } else {
         const match = regex.exec(testString);
-        if (match) {
-          newMatches.push({
-            text: match[0],
-            index: match.index,
-            groups: match.slice(1),
-          });
-        }
+        if (match) newMatches.push({ text: match[0], index: match.index, groups: match.slice(1) });
       }
       setMatches(newMatches);
     } catch (e) {
@@ -66,124 +59,136 @@ export default function RegexTester() {
   const getHighlightedText = () => {
     if (!testString) return '';
     if (matches.length === 0) return escapeHtml(testString);
-
     let result = '';
     let lastIndex = 0;
-
-    matches.forEach((match) => {
+    matches.forEach(match => {
       result += escapeHtml(testString.substring(lastIndex, match.index));
-      result += `<mark class="bg-yellow-200 text-yellow-900 rounded-sm px-0.5">${escapeHtml(match.text)}</mark>`;
+      result += `<mark style="background:rgba(245,158,11,0.25);color:#f59e0b;border-radius:3px;padding:0 2px;">${escapeHtml(match.text)}</mark>`;
       lastIndex = match.index + match.text.length;
     });
-
-    // Add remaining text
     result += escapeHtml(testString.substring(lastIndex));
     return result;
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {/* Error */}
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-md flex items-start gap-3 text-red-700 animate-[fadeInUp_0.2s_ease-out]">
-          <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <div className="flex flex-col gap-1">
-            <span className="font-bold text-sm underline decoration-red-200">Invalid Regular Expression</span>
-            <code className="text-xs bg-red-100/50 p-1 rounded font-mono">{error}</code>
-          </div>
+        <div style={{
+          padding: '10px 14px', borderRadius: 8,
+          background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
+          color: '#ef4444', fontSize: '0.85rem',
+        }}>
+          <strong>✕ Invalid Regex:</strong> <code style={{ fontFamily: 'var(--font-mono)' }}>{error}</code>
         </div>
       )}
 
-      <div className="flex gap-3 items-start">
-        <div className="flex-1 flex flex-col gap-1">
-          <label htmlFor="regex-pattern" className="text-sm font-medium text-gray-700">
-            Regex Pattern
+      {/* Pattern input row */}
+      <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end' }}>
+        <div style={{ flex: 1 }}>
+          <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+            Pattern
           </label>
-          <div className="flex items-center border border-gray-300 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
-            <span className="px-3 py-2 bg-gray-100 text-gray-500 select-none border-r border-gray-300 font-mono">/</span>
+          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden', background: 'var(--bg-elevated)' }}>
+            <span style={{ padding: '8px 12px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: '1rem', borderRight: '1px solid var(--border)', userSelect: 'none' }}>/</span>
             <input
               id="regex-pattern"
               type="text"
               value={pattern}
-              onChange={(e) => setPattern(e.target.value)}
+              onChange={e => setPattern(e.target.value)}
               placeholder="e.g. \b\w+\b"
-              className="flex-1 px-3 py-2 font-mono text-sm outline-none bg-white"
               spellCheck={false}
+              style={{ flex: 1, padding: '8px 12px', background: 'transparent', border: 'none', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)', fontSize: '0.875rem', outline: 'none' }}
             />
-            <span className="px-3 py-2 bg-gray-100 text-gray-500 select-none border-l border-gray-300 font-mono">/</span>
+            <span style={{ padding: '8px 12px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: '1rem', borderLeft: '1px solid var(--border)', userSelect: 'none' }}>/</span>
           </div>
         </div>
-
-        <div className="flex flex-col gap-1 w-28">
-          <label htmlFor="regex-flags" className="text-sm font-medium text-gray-700">
+        <div style={{ width: 110 }}>
+          <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
             Flags
           </label>
           <input
             id="regex-flags"
             type="text"
             value={flags}
-            onChange={(e) => setFlags(e.target.value.replace(/[^gimsuy]/g, ''))}
+            onChange={e => setFlags(e.target.value.replace(/[^gimsuy]/g, ''))}
             placeholder="gi"
             maxLength={6}
-            className="w-full px-3 py-2 font-mono text-sm border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-blue-500"
             spellCheck={false}
+            style={inputStyle}
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">
-            Test String
-          </label>
-          <EditorPanel
-            value={testString}
-            onChange={(val) => setTestString(val || '')}
-            language="plaintext"
-            label="Input string to test matches"
-          />
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">
-            Preview
-          </label>
-          <div 
-            className="flex-1 min-h-[400px] border border-gray-300 rounded-md p-4 bg-white overflow-auto font-mono text-sm whitespace-pre-wrap break-all"
-            dangerouslySetInnerHTML={{ __html: getHighlightedText() || '<span class="text-gray-400 italic">No matches to highlight</span>' }}
+      {/* Editors */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <EditorPanel
+          value={testString}
+          onChange={val => setTestString(val || '')}
+          language="plaintext"
+          label="Test String"
+        />
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{
+            fontSize: '0.72rem', fontWeight: 600, fontFamily: 'var(--font-mono)',
+            color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6,
+          }}>
+            Highlighted Preview
+          </div>
+          <div
+            style={{
+              flex: 1, minHeight: 420,
+              border: '1px solid var(--border)', borderRadius: 10,
+              padding: '14px 16px', background: 'var(--bg-surface)',
+              overflowY: 'auto', fontFamily: 'var(--font-mono)', fontSize: '0.85rem',
+              lineHeight: 1.8, whiteSpace: 'pre-wrap', wordBreak: 'break-all',
+              color: 'var(--text-primary)',
+            }}
+            dangerouslySetInnerHTML={{
+              __html: getHighlightedText() || '<span style="color:var(--text-muted);font-style:italic;">No matches to highlight</span>'
+            }}
           />
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+      {/* Match details */}
+      <div>
+        <h3 style={{ fontSize: '0.8rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
           Match Details
-          <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs font-normal">
+          <span style={{ padding: '2px 8px', borderRadius: 999, background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-secondary)', fontWeight: 400 }}>
             {matches.length} matches
           </span>
         </h3>
-        
         {matches.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 10 }}>
             {matches.map((match, i) => (
-              <div key={i} className="p-3 border border-gray-200 rounded-md bg-gray-50 flex flex-col gap-1">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Match {i + 1}</span>
-                  <span className="text-[10px] text-gray-500 font-mono">Index: {match.index}</span>
+              <div key={i} style={{
+                padding: '12px 14px',
+                background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 10,
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#3b82f6', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>Match {i + 1}</span>
+                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>idx: {match.index}</span>
                 </div>
-                <div className="text-sm font-mono truncate bg-white p-1.5 border border-gray-100 rounded">
-                  {match.text || <span className="text-gray-400 italic">Zero-width match</span>}
+                <div style={{
+                  fontFamily: 'var(--font-mono)', fontSize: '0.82rem',
+                  background: 'var(--bg-elevated)', padding: '6px 10px', borderRadius: 6,
+                  color: '#f59e0b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>
+                  {match.text || <em style={{ color: 'var(--text-muted)' }}>Zero-width</em>}
                 </div>
                 {match.groups.length > 0 && (
-                  <div className="mt-2 flex flex-col gap-1">
-                    <span className="text-[10px] font-semibold text-gray-400 uppercase">Groups</span>
-                    <div className="flex flex-wrap gap-1">
-                      {match.groups.map((group, groupIdx) => (
-                        <div key={groupIdx} className="flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 border border-blue-100 rounded text-[10px] font-mono text-blue-700">
-                          <span className="opacity-50">${groupIdx + 1}:</span>
-                          <span className="font-bold">{group === undefined ? 'undefined' : group}</span>
-                        </div>
+                  <div style={{ marginTop: 8 }}>
+                    <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 4 }}>GROUPS</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                      {match.groups.map((group, gi) => (
+                        <span key={gi} style={{
+                          padding: '2px 7px', borderRadius: 5,
+                          background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.2)',
+                          fontSize: '0.7rem', fontFamily: 'var(--font-mono)', color: '#60a5fa',
+                        }}>
+                          ${gi + 1}: {group === undefined ? 'undef' : group}
+                        </span>
                       ))}
                     </div>
                   </div>
@@ -192,15 +197,15 @@ export default function RegexTester() {
             ))}
           </div>
         ) : (
-          <div className="p-8 border border-dashed border-gray-300 rounded-md text-center text-gray-500 text-sm">
-            No matches found.
+          <div style={{
+            padding: '32px', textAlign: 'center',
+            border: '1px dashed var(--border)', borderRadius: 10,
+            color: 'var(--text-muted)', fontSize: '0.85rem',
+          }}>
+            {pattern.trim() ? 'No matches found.' : 'Enter a pattern above to start matching.'}
           </div>
         )}
       </div>
-
-      {(!pattern.trim()) && (
-        <p className="text-xs text-gray-400">Enter a pattern above to start matching.</p>
-      )}
     </div>
   );
 }
