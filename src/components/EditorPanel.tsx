@@ -18,31 +18,43 @@ export function EditorPanel({
   toolbar,
 }: EditorPanelProps) {
   return (
-    <div className="flex flex-col w-full h-[400px] border border-gray-300 rounded-md overflow-hidden bg-white">
+    <div style={{
+      display: 'flex', flexDirection: 'column', width: '100%', height: 420,
+      border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden',
+      background: 'var(--bg-surface)',
+    }}>
       {(label || toolbar) && (
-        <div className="flex justify-between items-center px-4 py-2 border-b border-gray-200 bg-gray-50">
-          <div className="font-medium text-sm text-gray-700">{label}</div>
-          <div className="flex items-center gap-2">{toolbar}</div>
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          padding: '8px 14px',
+          borderBottom: '1px solid var(--border)',
+          background: 'var(--bg-elevated)',
+        }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            {label}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>{toolbar}</div>
         </div>
       )}
-      <div className="flex-1 min-h-0">
+      <div style={{ flex: 1, minHeight: 0 }}>
         <Editor
           height="100%"
           width="100%"
+          theme="vs-dark"
           language={language}
           value={value}
           onChange={onChange}
           options={{
             readOnly,
-            fontSize: 14,
-            minimap: { 
-              enabled: true 
-            },
+            fontSize: 13,
+            minimap: { enabled: false },
             wordWrap: 'on',
             scrollBeyondLastLine: false,
             smoothScrolling: true,
-            padding: { top: 16, bottom: 16 },
+            padding: { top: 14, bottom: 14 },
             fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace",
+            lineNumbersMinChars: 3,
+            renderLineHighlight: 'gutter',
           }}
         />
       </div>
