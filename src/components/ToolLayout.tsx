@@ -23,6 +23,9 @@ export function ToolLayout() {
   } else if (pathName === 'api-mock') {
     title = 'API Mock Generator';
     description = 'Generate mock API responses and boilerplate fetch/curl snippets from your API definition.';
+  } else if (pathName === 'regex-tester') {
+    title = 'Regex Tester';
+    description = 'Test regular expressions against any string and see matches highlighted in real time.';
   }
 
   return (
