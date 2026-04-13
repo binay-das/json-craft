@@ -139,6 +139,35 @@ export default function RegexTester() {
         </div>
       </div>
 
+      <div className="flex flex-col gap-2">
+        <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+          Match Details
+          <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs font-normal">
+            {matches.length} matches
+          </span>
+        </h3>
+        
+        {matches.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {matches.map((match, i) => (
+              <div key={i} className="p-3 border border-gray-200 rounded-md bg-gray-50 flex flex-col gap-1">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Match {i + 1}</span>
+                  <span className="text-[10px] text-gray-500 font-mono">Index: {match.index}</span>
+                </div>
+                <div className="text-sm font-mono truncate bg-white p-1.5 border border-gray-100 rounded">
+                  {match.text || <span className="text-gray-400 italic">Zero-width match</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-8 border border-dashed border-gray-300 rounded-md text-center text-gray-500 text-sm">
+            No matches found.
+          </div>
+        )}
+      </div>
+
       {(!pattern.trim()) && (
         <p className="text-xs text-gray-400">Enter a pattern above to start matching.</p>
       )}
