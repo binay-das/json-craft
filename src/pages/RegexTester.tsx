@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import { EditorPanel } from '../components/EditorPanel';
 
 export default function RegexTester() {
   const [pattern, setPattern] = useState<string>('');
   const [flags, setFlags] = useState<string>('g');
+  const [testString, setTestString] = useState<string>('Regex is fun!');
 
-  
   return (
     <div className="flex flex-col gap-6">
       <div className="flex gap-3 items-start">
@@ -42,6 +43,18 @@ export default function RegexTester() {
             spellCheck={false}
           />
         </div>
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label className="text-sm font-medium text-gray-700">
+          Test String
+        </label>
+        <EditorPanel
+          value={testString}
+          onChange={(val) => setTestString(val || '')}
+          language="plaintext"
+          label="Input string to test matches"
+        />
       </div>
 
       {(!pattern.trim()) && (
