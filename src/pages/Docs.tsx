@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { Search, ChevronRight, Command } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 interface DocItem {
   id: string;
@@ -23,7 +24,7 @@ const CONTENT: Record<string, DocItem> = {
           absolute privacy and terminal-grade speed.
         </p>
 
-        <h2 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: 700, marginTop: 48, marginBottom: 24 }}>
+        <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginTop: 48, marginBottom: 24, color: 'var(--text-primary)' }}>
           Understanding the Architecture
         </h2>
         <p style={{ marginBottom: 24 }}>
@@ -49,7 +50,7 @@ const CONTENT: Record<string, DocItem> = {
           there are no servers to configure or accounts to create.
         </p>
 
-        <h2 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: 700, marginTop: 48, marginBottom: 24 }}>
+        <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginTop: 48, marginBottom: 24, color: 'var(--text-primary)' }}>
           Quick Action Guide
         </h2>
         <ol style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingLeft: 20, marginBottom: 32 }}>
@@ -59,7 +60,7 @@ const CONTENT: Record<string, DocItem> = {
           <li>Export or copy your newly architected payload.</li>
         </ol>
 
-        <h2 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: 700, marginTop: 48, marginBottom: 24 }}>
+        <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginTop: 48, marginBottom: 24, color: 'var(--text-primary)' }}>
           Pro Tips
         </h2>
         <p>
@@ -80,7 +81,7 @@ const CONTENT: Record<string, DocItem> = {
           any remote server. The processing happens in your browser's memory.
         </p>
 
-        <h2 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: 700, marginTop: 48, marginBottom: 24 }}>
+        <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginTop: 48, marginBottom: 24, color: 'var(--text-primary)' }}>
           Our Privacy Commitment
         </h2>
         <p style={{ marginBottom: 32 }}>
@@ -88,9 +89,9 @@ const CONTENT: Record<string, DocItem> = {
           using local templates, ensuring zero data leakage to third parties.
         </p>
 
-        <div style={{ background: '#0a0a0a', border: '1px solid #1a1a1a', padding: 24, borderRadius: 8 }}>
-          <h3 style={{ color: '#fff', fontSize: '1.1rem', marginBottom: 12 }}>Client-Side Sanitization</h3>
-          <p style={{ color: '#666', fontSize: '0.9rem' }}>
+        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', padding: 24, borderRadius: 8 }}>
+          <h3 style={{ fontSize: '1.1rem', marginBottom: 12, color: 'var(--text-primary)' }}>Client-Side Sanitization</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
             Before any transformation starts, our engine sanitizes the input locally. This ensures that even
             malformed or malicious JSON cannot affect your browser stability.
           </p>
@@ -110,7 +111,7 @@ const CONTENT: Record<string, DocItem> = {
           with no visible UI latency.
         </p>
 
-        <h2 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: 700, marginTop: 48, marginBottom: 24 }}>
+        <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginTop: 48, marginBottom: 24, color: 'var(--text-primary)' }}>
           Key Options
         </h2>
         <ul style={{ display: 'flex', flexDirection: 'column', gap: 12, listStyle: 'none', padding: 0 }}>
@@ -133,7 +134,7 @@ const CONTENT: Record<string, DocItem> = {
           at the exact line and character, making debugging effortless.
         </p>
 
-        <h2 style={{ color: '#fff', fontSize: '1.6rem', fontWeight: 700, marginTop: 48, marginBottom: 24 }}>
+        <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginTop: 48, marginBottom: 24, color: 'var(--text-primary)' }}>
           Schema Generation
         </h2>
         <p style={{ marginBottom: 32 }}>
@@ -165,6 +166,7 @@ const GROUPS = [
 
 export default function Docs() {
   const [activeId, setActiveId] = useState('intro');
+  const { isDark } = useTheme();
   const currentItem = CONTENT[activeId] || CONTENT['intro'];
 
   return (
@@ -172,12 +174,12 @@ export default function Docs() {
       display: 'flex',
       flexDirection: 'column',
       height: 'calc(100vh - 120px)',
-      background: '#000000',
-      color: '#ffffff',
+      background: 'var(--bg-base)',
+      color: 'var(--text-primary)',
       fontFamily: 'var(--font-sans)',
       overflow: 'hidden',
       borderRadius: 12,
-      border: '1px solid #1a1a1a',
+      border: '1px solid var(--border)',
       margin: '0 24px 24px 24px',
     }}>
       <div style={{
@@ -185,13 +187,13 @@ export default function Docs() {
         alignItems: 'center',
         padding: '0 24px',
         minHeight: 52,
-        borderBottom: '1px solid #1a1a1a',
+        borderBottom: '1px solid var(--border)',
         gap: 32,
-        background: '#050505',
+        background: 'var(--bg-surface)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.825rem', fontWeight: 600 }}>
-          <span style={{ color: '#444' }}>JSONCraft</span>
-          <ChevronRight size={14} color="#222" />
+          <span style={{ color: 'var(--text-muted)' }}>JSONCraft</span>
+          <ChevronRight size={14} color="var(--border)" />
           <span style={{ color: '#3b82f6', fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>v1.0 docs</span>
         </div>
 
@@ -199,18 +201,28 @@ export default function Docs() {
           flex: 1,
           maxWidth: 320,
           height: 32,
-          background: '#0a0a0a',
-          border: '1px solid #1a1a1a',
+          background: 'var(--bg-elevated)',
+          border: '1px solid var(--border)',
           borderRadius: 6,
           display: 'flex',
           alignItems: 'center',
           padding: '0 12px',
           gap: 8,
-          color: '#444',
+          color: 'var(--text-muted)',
         }}>
           <Search size={14} />
-          <input placeholder='Search documentation...' style={{ fontSize: '0.8rem', flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#fff' }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: '0.65rem', background: '#000', padding: '2px 6px', borderRadius: 4, border: '1px solid #1a1a1a' }}>
+          <input
+            placeholder='Search documentation...'
+            style={{
+              fontSize: '0.8rem', flex: 1, background: 'transparent',
+              border: 'none', outline: 'none', color: 'var(--text-primary)',
+            }}
+          />
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 2, fontSize: '0.65rem',
+            background: 'var(--bg-card)', padding: '2px 6px', borderRadius: 4,
+            border: '1px solid var(--border)',
+          }}>
             <Command size={10} /> K
           </div>
         </div>
@@ -219,20 +231,20 @@ export default function Docs() {
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <aside style={{
           width: 250,
-          borderRight: '1px solid #1a1a1a',
+          borderRight: '1px solid var(--border)',
           padding: '24px 12px',
           display: 'flex',
           flexDirection: 'column',
           gap: 28,
           overflowY: 'auto',
-          background: '#000000',
+          background: 'var(--bg-base)',
         }}>
           {GROUPS.map(group => (
             <div key={group.name}>
               <div style={{
                 fontSize: '0.65rem',
                 fontWeight: 800,
-                color: '#333',
+                color: 'var(--text-muted)',
                 letterSpacing: '0.1em',
                 marginBottom: 12,
                 paddingLeft: 12,
@@ -254,8 +266,8 @@ export default function Docs() {
                         fontSize: '0.825rem',
                         fontWeight: isActive ? 600 : 400,
                         textAlign: 'left',
-                        background: isActive ? 'rgba(255, 105, 180, 0.08)' : 'transparent',
-                        color: isActive ? '#3b82f6' : '#666',
+                        background: isActive ? 'var(--accent-glow)' : 'transparent',
+                        color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
                         border: 'none',
                         borderRadius: 6,
                         cursor: 'pointer',
@@ -264,8 +276,8 @@ export default function Docs() {
                         alignItems: 'center',
                         justifyContent: 'space-between',
                       }}
-                      onMouseOver={e => { if (!isActive) e.currentTarget.style.color = '#fff'; }}
-                      onMouseOut={e => { if (!isActive) e.currentTarget.style.color = '#666'; }}
+                      onMouseOver={e => { if (!isActive) e.currentTarget.style.color = 'var(--text-primary)'; }}
+                      onMouseOut={e => { if (!isActive) e.currentTarget.style.color = 'var(--text-secondary)'; }}
                     >
                       {item.title}
                     </button>
@@ -277,21 +289,20 @@ export default function Docs() {
         </aside>
 
         <main
-          key={activeId} 
+          key={activeId}
           style={{
             flex: 1,
             overflowY: 'auto',
             padding: '80px 60px',
-            background: '#000000',
+            background: 'var(--bg-base)',
             scrollbarWidth: 'none',
           }}
         >
           <div style={{ maxWidth: 740, margin: '0 auto', animation: 'fadeInUp 0.3s ease-out' }}>
-            {/* Tag */}
             <div style={{
               fontSize: '0.72rem',
               fontWeight: 800,
-              color: '#3b82f6',
+              color: 'var(--accent)',
               letterSpacing: '0.15em',
               marginBottom: 16,
               textTransform: 'uppercase',
@@ -305,14 +316,14 @@ export default function Docs() {
               letterSpacing: '-0.05em',
               lineHeight: 1,
               marginBottom: 20,
-              color: '#fff',
+              color: 'var(--text-primary)',
             }}>
               {currentItem.title}
             </h1>
 
             <p style={{
               fontSize: '1.25rem',
-              color: '#555',
+              color: 'var(--text-secondary)',
               marginBottom: 48,
               lineHeight: 1.5,
               fontWeight: 500,
@@ -321,7 +332,7 @@ export default function Docs() {
               {currentItem.subtitle}
             </p>
 
-            <div style={{ color: '#888', lineHeight: 1.8, fontSize: '1rem' }}>
+            <div style={{ color: 'var(--text-secondary)', lineHeight: 1.8, fontSize: '1rem' }}>
               {currentItem.content}
             </div>
           </div>
@@ -330,48 +341,45 @@ export default function Docs() {
         <aside style={{
           width: 240,
           padding: '80px 24px',
-          background: '#000000',
-          borderLeft: '1px solid #1a1a1a',
+          background: 'var(--bg-base)',
+          borderLeft: '1px solid var(--border)',
           fontSize: '0.8rem',
           display: 'flex',
           flexDirection: 'column',
           gap: 16,
           overflowY: 'auto',
         }}>
-          <div style={{ fontWeight: 700, color: '#fff', marginBottom: 8 }}>On this page</div>
+          <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>On this page</div>
           {currentItem.toc.map(section => (
             <div key={section} style={{
-              color: '#666',
+              color: 'var(--text-secondary)',
               cursor: 'pointer',
               transition: 'color 0.15s',
             }}
-              onMouseOver={e => e.currentTarget.style.color = '#fff'}
-              onMouseOut={e => e.currentTarget.style.color = '#666'}
+              onMouseOver={e => (e.currentTarget.style.color = 'var(--text-primary)')}
+              onMouseOut={e => (e.currentTarget.style.color = 'var(--text-secondary)')}
             >
               {section}
             </div>
           ))}
 
           <div style={{ marginTop: 32 }}>
-            <div style={{ color: '#333', fontWeight: 800, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 16 }}>Available Tools</div>
+            <div style={{
+              color: 'var(--text-muted)', fontWeight: 800, fontSize: '0.65rem',
+              textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 16,
+            }}>Available Tools</div>
             {['Formatter', 'Validator', 'Schema Gen', 'Mock Engine'].map(t => (
-              <div key={t} style={{ color: '#666', marginBottom: 8, fontSize: '0.75rem' }}>{t}</div>
+              <div key={t} style={{ color: 'var(--text-secondary)', marginBottom: 8, fontSize: '0.75rem' }}>{t}</div>
             ))}
           </div>
         </aside>
       </div>
 
       <style>{`
-        body { padding: 0 !important; }
         ::-webkit-scrollbar { width: 4px; height: 0; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #222; }
-        
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
       `}</style>
     </div>
   );

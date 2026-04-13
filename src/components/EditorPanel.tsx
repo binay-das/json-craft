@@ -1,4 +1,5 @@
 import Editor from '@monaco-editor/react';
+import { useTheme } from '../context/ThemeContext';
 
 interface EditorPanelProps {
   value: string;
@@ -17,6 +18,8 @@ export function EditorPanel({
   label,
   toolbar,
 }: EditorPanelProps) {
+  const { isDark } = useTheme();
+
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', width: '100%', height: 420,
@@ -40,7 +43,7 @@ export function EditorPanel({
         <Editor
           height="100%"
           width="100%"
-          theme="vs-dark"
+          theme={isDark ? 'vs-dark' : 'light'}
           language={language}
           value={value}
           onChange={onChange}

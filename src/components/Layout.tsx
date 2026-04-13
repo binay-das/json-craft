@@ -2,17 +2,20 @@ import { useState } from 'react';
 import { TOOLS } from '../config/tools';
 import { ROUTES } from '../config/routes';
 import { Outlet, Link, NavLink } from 'react-router-dom';
-import { ChevronDown, Menu, X, Braces } from 'lucide-react';
+import { ChevronDown, Menu, X, Braces, Sun, Moon } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+
 
 export function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isToolsDropdownOpen, setIsToolsDropdownOpen] = useState<boolean>(false);
+  const { isDark, toggle } = useTheme();
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-base)', color: 'var(--text-primary)' }}>
       <header style={{
         position: 'sticky', top: 0, zIndex: 50,
-        background: 'rgba(11,13,17,0.85)',
+        background: isDark ? 'rgba(11,13,17,0.85)' : 'rgba(244,246,250,0.85)',
         backdropFilter: 'blur(12px)',
         borderBottom: '1px solid var(--border)',
       }}>
@@ -141,6 +144,34 @@ export function Layout() {
             >
               Try it Free
             </Link>
+
+            <button
+              id="theme-toggle"
+              onClick={toggle}
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: 36, height: 36, borderRadius: 8,
+                border: '1px solid var(--border)',
+                background: 'var(--bg-elevated)',
+                color: 'var(--text-secondary)',
+                cursor: 'pointer',
+                transition: 'border-color 0.2s, color 0.2s, background 0.2s, transform 0.15s',
+                flexShrink: 0,
+              }}
+              onMouseOver={e => {
+                (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent)';
+                (e.currentTarget as HTMLElement).style.color = 'var(--accent)';
+                (e.currentTarget as HTMLElement).style.transform = 'scale(1.08)';
+              }}
+              onMouseOut={e => {
+                (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
+                (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)';
+                (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
+              }}
+            >
+              {isDark ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
 
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}

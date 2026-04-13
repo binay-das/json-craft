@@ -6,6 +6,7 @@ import {
   FileJson, Replace, Code2, Database, Search, ShieldCheck, Layers,
   ChevronRight, ArrowRight,
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 const S = {
   section: (extra: React.CSSProperties = {}): React.CSSProperties => ({
@@ -25,15 +26,15 @@ const S = {
   }),
 };
 
-const CODE_LINES = [
-  { indent: 0, content: '{', color: '#e8edf5' },
-  { indent: 1, content: '"object": {', color: '#60a5fa' },
-  { indent: 2, content: '"name": "JSONCraft",', color: '#e8edf5' },
-  { indent: 2, content: '"status": "optimized",', color: '#e8edf5' },
-  { indent: 2, content: '"fidelity": 0.99,', color: '#e8edf5' },
-  { indent: 2, content: '"is_awesome": true', color: '#22d3a5' },
-  { indent: 1, content: '}', color: '#60a5fa' },
-  { indent: 0, content: '}', color: '#e8edf5' },
+const CODE_LINES_DATA = [
+  { indent: 0, content: '{',                    type: 'bracket' },
+  { indent: 1, content: '"object": {',          type: 'key'     },
+  { indent: 2, content: '"name": "JSONCraft",', type: 'value'   },
+  { indent: 2, content: '"status": "optimized",',type: 'value'   },
+  { indent: 2, content: '"fidelity": 0.99,',   type: 'value'   },
+  { indent: 2, content: '"is_awesome": true',  type: 'boolean' },
+  { indent: 1, content: '}',                    type: 'bracket' },
+  { indent: 0, content: '}',                    type: 'bracket' },
 ];
 
 const STATS = [
@@ -64,6 +65,17 @@ const TOOL_COLORS: Record<string, string> = {
 const TECHS = ['React', 'Vite', 'Tailwind', 'TypeScript'];
 
 export default function Home() {
+  const { isDark } = useTheme();
+
+  const codeColors = {
+    bracket: isDark ? '#e8edf5' : '#1e2a3a',
+    key:     isDark ? '#60a5fa' : '#2563eb',
+    value:   isDark ? '#e8edf5' : '#374151',
+    boolean: isDark ? '#22d3a5' : '#059669',
+  };
+
+  const CODE_LINES = CODE_LINES_DATA.map(l => ({ ...l, color: codeColors[l.type as keyof typeof codeColors] }));
+
   return (
     <div style={{ overflowX: 'hidden' }}>
       <section style={{
@@ -92,7 +104,7 @@ export default function Home() {
             marginBottom: 24,
             color: 'var(--text-primary)',
           }}>
-            Forge Better{' '}
+            Craft Better{' '}
             <span style={{
               background: 'linear-gradient(95deg, #60a5fa 0%, #22d3a5 100%)',
               WebkitBackgroundClip: 'text',
@@ -390,7 +402,7 @@ export default function Home() {
           onMouseOver={e => { (e.currentTarget as HTMLElement).style.opacity = '0.85'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
           onMouseOut={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; (e.currentTarget as HTMLElement).style.transform = 'none'; }}
         >
-          Forge JSON Now
+          Craft JSON Now
         </Link>
       </section>
 
