@@ -8,6 +8,7 @@ import { ROUTES } from './config/routes';
 import JsonFormatter from './pages/JsonFormatter';
 import CsvToJson from './pages/CsvToJson';
 import JsonSchemaGenerator from './pages/JsonSchemaGenerator';
+import ApiMockGenerator from './pages/ApiMockGenerator';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="json-formatter" element={<JsonFormatter />} />
           <Route path="csv-to-json" element={<CsvToJson />} />
           <Route path="json-schema" element={<JsonSchemaGenerator />} />
+          <Route path="api-mock" element={<ApiMockGenerator />} />
           <Route path=":name" element={<ToolDetail />} />
         </Route>
       </Route>
